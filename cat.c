@@ -4,23 +4,25 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <string.h>
+
+#define BUFFER_SIZE 2048
 
 static void do_cat (const char *path);
 static void die(const char *s);
 
 int main (int argc, char *argv[]) {
     if (argc < 2) {
-        fprintf(stderr, "%s: file name not given\n", argv[0]);
-        exit(1);
-    }
-
-    for (int i = 1; i < argc; i++) {
-        do_cat(argv[i]);
+        char s[BUFFER_SIZE];
+        scanf("%s", s);
+        write(STDOUT_FILENO, s, strlen(s));
+    } else {
+        for (int i = 1; i < argc; i++) {
+            do_cat(argv[i]);
+        }
     }
     exit(0);
 }
-
-#define BUFFER_SIZE 2048
 
 static void do_cat(const char *path) {
     int fd;
