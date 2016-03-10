@@ -2,19 +2,31 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#define _GNU_SOURCE
+#include<getopt.h>
+
 static void do_head(FILE *f, long nlines);
 
 #define DEFAULT_N_LINES 10
+
+static struct option longopts[] = {
+    {"lines", required_argument,  NULL, 'n'},
+    {"help",  no_argument,        NULL, 'h'},
+    {0, 0, 0, 0}
+};
 
 int main (int argc, char *argv[]) {
     int opt;
     long nlines = DEFAULT_N_LINES;
 
-    while ((opt = getopt(argc, argv, "n:")) != -1) {
+    while ((opt = getopt_long(argc, argv, "n:", longopts, NULL)) != -1) {
         switch (opt) {
             case 'n':
                 nlines = atoi(optarg);
                 break;
+            case 'h':
+                fprintf(stdout, "Usage: %s [-n LINES] [file...]\n", argv[0]);
+                exit(0);
             case '?':
                 fprintf(stderr, "Usage: %s [-n LINES] [file...]\n", argv[0]);
                 exit(1);
@@ -45,6 +57,7 @@ static void do_head (FILE * f, long nlines) {
         if (putchar(c) < 0) exit(1);
         if (c == '\n') {
             nlines--;
+            printf("=%ld=\n", nlines);
             if (nlines == 0) return;
         }
     }
